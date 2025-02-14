@@ -173,6 +173,7 @@ export default function Home() {
 
     <>
       <NavBar />
+      
       <main className="flex min-h-screen flex-col pt-4">
         <HeroSection />
         {/* Other sections */}

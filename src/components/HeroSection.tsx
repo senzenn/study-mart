@@ -4,38 +4,15 @@ import React, { useState, useEffect } from 'react'
 import { motion, useAnimation, useScroll, useTransform } from 'framer-motion'
 import Image from 'next/image'
 import { 
-  FaChartLine, 
-  FaUserCircle, 
-  FaPlay, 
-  FaChartBar, 
-  FaBitcoin, 
-  FaEthereum,
-  FaChartPie,
-  FaLock,
   FaBook, 
   FaGraduationCap, 
   FaSearch,
   FaBookOpen,
   FaChalkboardTeacher,
-  FaLaptop
+  FaLaptop,
+  FaUserCircle,
+  FaArrowRight
 } from 'react-icons/fa'
-import { AnimatePresence } from 'framer-motion'
-
-interface TraderCardProps {
-  name: string
-  fund: string
-  image?: string
-  delay?: number
-  performance?: string
-  trades?: number
-}
-
-interface CryptoPrice {
-  symbol: string
-  price: string
-  change: string
-  icon: React.ElementType
-}
 
 interface TrendingItem {
   title: string
@@ -44,86 +21,19 @@ interface TrendingItem {
   icon: React.ElementType
 }
 
-const cryptoPrices: CryptoPrice[] = [
-  { symbol: 'BTC', price: '$45,234', change: '+2.5%', icon: FaBitcoin },
-  { symbol: 'ETH', price: '$2,345', change: '+1.8%', icon: FaEthereum },
-]
+interface FeatureCardProps {
+  icon: React.ElementType
+  title: string
+  description: string
+  delay?: number
+}
 
 const trendingItems: TrendingItem[] = [
   { title: 'Engineering Books', category: 'Books', price: '₹499', icon: FaBook },
   { title: 'Study Materials', category: 'Notes', price: '₹299', icon: FaBookOpen },
 ]
 
-const TraderCard = ({ name, fund, image, delay = 0, performance = '+12.5%', trades = 156 }: TraderCardProps) => {
-  const [isHovered, setIsHovered] = useState(false)
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className="relative group"
-    >
-      <motion.div
-        animate={{
-          scale: isHovered ? 1.02 : 1,
-          boxShadow: isHovered ? '0 8px 30px rgba(0,0,0,0.12)' : '0 4px 6px rgba(0,0,0,0.1)',
-        }}
-        className="flex flex-col gap-3 bg-gray-900/50 backdrop-blur-lg rounded-xl p-4 border border-gray-800 cursor-pointer"
-      >
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative w-12 h-12">
-              {image ? (
-                <Image
-                  src={image}
-                  alt={name}
-                  fill
-                  className="rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center">
-                  <FaUserCircle className="w-6 h-6 text-white" />
-                </div>
-              )}
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-900" />
-            </div>
-            <div>
-              <p className="text-white font-medium">{name}</p>
-              <p className="text-green-400 text-sm">Fund {fund}</p>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-green-400 font-medium">{performance}</p>
-            <p className="text-gray-400 text-sm">{trades} trades</p>
-          </div>
-        </div>
-        
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0, height: isHovered ? 'auto' : 0 }}
-          className="pt-3 border-t border-gray-800"
-        >
-          <div className="flex justify-between text-sm text-gray-400">
-            <span>Win Rate</span>
-            <span className="text-green-400">68%</span>
-          </div>
-          <div className="mt-2 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: '68%' }}
-              className="h-full bg-gradient-to-r from-green-500 to-green-400"
-            />
-          </div>
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  )
-}
-
-const FeatureCard = ({ icon: Icon, title, description, delay = 0 }) => (
+const FeatureCard = ({ icon: Icon, title, description, delay = 0 }: FeatureCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -143,7 +53,6 @@ export default function HeroSection() {
   const { scrollY } = useScroll()
   const y = useTransform(scrollY, [0, 300], [0, -50])
   const opacity = useTransform(scrollY, [0, 300], [1, 0])
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
   useEffect(() => {
     controls.start({
@@ -181,37 +90,19 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Live Crypto Prices */}
-      <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex gap-4 px-6 py-2.5 bg-gray-900/40 backdrop-blur-xl rounded-full border border-gray-800/50"
-        >
-          {cryptoPrices.map((crypto, index) => (
-            <div key={crypto.symbol} className="flex items-center gap-2">
-              {index > 0 && <div className="w-px h-6 bg-gray-800" />}
-              <crypto.icon className="w-5 h-5 text-yellow-500" />
-              <span className="text-white/90 font-medium">{crypto.price}</span>
-              <span className="text-green-400/90 text-sm">{crypto.change}</span>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-
       {/* Trending Items */}
-      <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
+      <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex gap-4 px-6 py-2.5 bg-gray-900/40 backdrop-blur-xl rounded-full border border-gray-800/50"
+          className="flex gap-4 px-6 py-3 bg-gray-900/60 backdrop-blur-xl rounded-full border border-gray-800/50 justify-center"
         >
           {trendingItems.map((item, index) => (
             <div key={item.title} className="flex items-center gap-2">
-              {index > 0 && <div className="w-px h-6 bg-gray-800" />}
+              {index > 0 && <div className="w-px h-6 bg-gray-700" />}
               <item.icon className="w-5 h-5 text-purple-400" />
-              <span className="text-white/90 font-medium">{item.title}</span>
-              <span className="text-green-400/90 text-sm">{item.price}</span>
+              <span className="text-white font-medium">{item.title}</span>
+              <span className="text-green-400 text-sm">{item.price}</span>
             </div>
           ))}
         </motion.div>
@@ -223,10 +114,10 @@ export default function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 mb-8"
+          className="inline-flex items-center px-4 py-2 rounded-full bg-gray-900/60 backdrop-blur-sm border border-gray-800/50 mb-8"
         >
           <span className="text-pink-500 mr-2">✨</span>
-          <span className="text-white/90 text-sm">Join Your Campus Community</span>
+          <span className="text-white text-sm">Join Your Campus Community</span>
         </motion.div>
 
         {/* Main Content Container */}
@@ -267,19 +158,10 @@ export default function HeroSection() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
             >
               Start Exploring
-            </motion.button>
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsVideoModalOpen(true)}
-              className="px-6 sm:px-8 py-3 sm:py-4 bg-white/5 backdrop-blur-sm text-white font-semibold rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 flex items-center gap-2"
-            >
-              <FaPlay className="w-4 h-4" />
-              How It Works
+              <FaArrowRight className="w-4 h-4" />
             </motion.button>
           </motion.div>
         </div>
@@ -317,7 +199,7 @@ export default function HeroSection() {
             {[
               { value: '50+', label: 'Campuses' },
               { value: '10k+', label: 'Active Users' },
-              { value: '50k+', label: 'Items Listed' },
+              { value: '₹50L+', label: 'Sales Generated' },
               { value: '4.9/5', label: 'User Rating' }
             ].map((stat, index) => (
               <motion.div
@@ -325,40 +207,15 @@ export default function HeroSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 + index * 0.1 }}
-                className="text-center p-4 md:p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10"
+                className="text-center p-4 md:p-6 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-800/50"
               >
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{stat.value}</h3>
-                <p className="text-gray-400 text-sm md:text-base">{stat.label}</p>
+                <p className="text-gray-300 text-sm md:text-base">{stat.label}</p>
               </motion.div>
             ))}
           </div>
         </motion.div>
       </div>
-
-      {/* Video Modal */}
-      <AnimatePresence>
-        {isVideoModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl"
-            onClick={() => setIsVideoModalOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-4xl aspect-video bg-white/5 rounded-2xl overflow-hidden border border-white/10"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-white/90 text-lg">How StudyMart Works - Tutorial Video</p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 } 
